@@ -149,17 +149,6 @@ template<> struct VLEN<double> { static constexpr size_t val=2; };
 #endif
 #endif
 
-#if __cplusplus >= 201703L
-inline void *aligned_alloc(size_t align, size_t size)
-  {
-  // aligned_alloc() requires that the requested size is a multiple of "align"
-  void *ptr = ::aligned_alloc(align,(size+align-1)&(~(align-1)));
-  if (!ptr) throw std::bad_alloc();
-  return ptr;
-  }
-inline void aligned_dealloc(void *ptr)
-    { free(ptr); }
-#else // portable emulation
 inline void *aligned_alloc(size_t align, size_t size)
   {
   align = std::max(align, alignof(max_align_t));
@@ -172,7 +161,6 @@ inline void *aligned_alloc(size_t align, size_t size)
   }
 inline void aligned_dealloc(void *ptr)
   { if (ptr) free((reinterpret_cast<void**>(ptr))[-1]); }
-#endif
 
 template<typename T> class arr
   {
